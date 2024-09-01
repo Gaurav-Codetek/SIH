@@ -10,10 +10,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        // maven { url 'https://jitpack.io' }
+        // maven { url "$rootDir/../node_modules/react-native-background-fetch/android/libs" }
         // maven { url "https://maven.transistorsoft.com" }
     }
     dependencies {
+        classpath("com.android.tools.build:gradle:7.0.2")
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")

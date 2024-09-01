@@ -111,6 +111,9 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    // implementation 'com.github.transistorsoft:docs:-SNAPSHOT'
+    // implementation 'com.github.transistorsoft:react-native-background-geolocation:4.0.0'
+    // implementation 'com.github.User:Repo:Tag'
     // implementation 'com.transistorsoft:tslocationmanager:3.0.0'
 
     if (hermesEnabled.toBoolean()) {
