@@ -17,6 +17,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import LoginScreen from "../screen/Login";
+import SignUpScreen from "../screen/SignUp";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -105,76 +107,22 @@ const StackNavigator = () => {
     <NavigationContainer>
       <Stack.Navigator>
 
-      <Stack.Screen
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={SignUpScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Records"
           component={Records}
           options={{ headerShown: false }}
         />
 
-
-        {/* <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        /> */}
-        {/* <Stack.Screen
-          name="Register"
-          component={RegisterScreen}
-          options={{ headerShown: false }}
-        /> */}
-        {/* <Stack.Screen
-          name="course-detail"
-          component={CourseDetails}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="play-video"
-          component={PlayVideo}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="support"
-          component={Support}
-          options={{ headerShown: false }}
-        />
-
-        <Stack.Screen
-          name="AboutCourse"
-          component={AboutCourse}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Enrollment"
-          component={Enrollment}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AddCardDetails"
-          component={AddCardDetails}
-          options={{ headerShown: false }}
-        />
-
-        <Stack.Screen
-          name="EReceipt"
-          component={EReceiptScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AllCategoriesScreen"
-          component={AllCategoriesScreen}
-          options={{ headerShown: true }}
-        />
-        <Stack.Screen
-          name="PopularCoursesScreen"
-          component={PopularCoursesScreen}
-          options={{ headerShown: true }}
-        /> */}
-        {/* <Stack.Screen
-          name="Main"
-          component={BottomTabs}
-          options={{ headerShown: false }}
-        /> */}
-        
       </Stack.Navigator>
     </NavigationContainer>
   );
