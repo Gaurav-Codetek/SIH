@@ -6,10 +6,45 @@ import Geolocation from 'react-native-geolocation-service';
 import {request, PERMISSIONS} from 'react-native-permissions';
 import getDistance from 'geolib/es/getDistance';
 import moment from 'moment';
+import axios from 'axios';
+const Records = ({ route }) => {
+  const { token: storedToken } = route.params; // Access the token from route params
+  // const [token, setToken] = useState(storedToken);
+  const [token, setToken] = useState(storedToken);
 
-const Records = () => {
+  // useEffect(() => {
+  //   // Define an async function to remove the item
+  //   const removeItem = async () => {
+  //     try {
+  //       await AsyncStorage.removeItem('Token');
+  //       console.log('Item removed successfully');
+  //     } catch (error) {
+  //       console.error('Error removing item', error);
+  //     }
+  //   };
+
+  //   // Call the async function
+  //   removeItem();
+  // }, []);
+  
+
+  useEffect(() => {
+    console.log("In first useEffect");
+    const getData = async () => {
+    console.log("stored token from async storage");
+      const storedToken = await AsyncStorage.getItem("Token");
+    console.log("stored token from async storage is this: ", storedToken);
+      if (storedToken) {
+        setToken(storedToken);
+        console.log("Token exists:", storedToken);
+        // Optionally navigate to another screen or handle the token
+      }
+    };    
+    getData();
+  }, []);
 
     const [selectedBox, setSelectedBox] = useState('Your Status');
+    // console.log(toke)
 
     const renderDetails = () => {
       switch (selectedBox) {
@@ -72,7 +107,7 @@ const Records = () => {
         // Define office coordinates and check-in distance
 const OFFICE_LATITUDE = 30.747461; // Replace with  office latitude
 const OFFICE_LONGITUDE = 76.7740133; // Replace with  office longitude
-const CHECKIN_DISTANCE_METERS = 10; // 200 meters radius
+const CHECKIN_DISTANCE_METERS = 2; // 200 meters radius
 
 
 const [seconds, setSeconds] = useState(0);
@@ -83,6 +118,9 @@ const [permissionGranted, setPermissionGranted] = useState(false);
 const [permissionGrantedBG, setPermissionGrantedBG] = useState(false);
 const [status, setStatus] = useState('Not checked in');
 const [distance1, setDistance] = useState(0);
+const [Latitude, setLatitude] = useState();
+const [Longitude, setLongitude] = useState();
+
   //current time 
   const [currentTime, setCurrentTime] = useState('');
 
@@ -157,6 +195,8 @@ const [distance1, setDistance] = useState(0);
     );
     console.log('user location latitude: ', userLocation.latitude);
     console.log('user location longitude: ', userLocation.longitude);
+    setLatitude(userLocation.latitude);
+    setLongitude(userLocation.longitude);
     console.log('user Office latitude: ', OFFICE_LATITUDE);
     console.log('user Office longitude: ', OFFICE_LONGITUDE);
     console.log(distance);
@@ -214,15 +254,61 @@ const [distance1, setDistance] = useState(0);
     setSeconds(0);
   };
 
-  useEffect(() => {
-    // Store the status in the statusLog array
-    setStatusLog((prevStatusLog) => [...prevStatusLog, status]);
-    
-    getCurrentTime();
-    // Store the corresponding time in the statusChangeTimes array
-    setStatusChangeTimes((prevTimes) => [...prevTimes, currentTime]);
+  // useEffect(() => {
+  //   if (status) {
+  //     setStatusLog((prevStatusLog) => [...prevStatusLog, status]);
+  //     getCurrentTime();
+  //     setStatusChangeTimes((prevTimes) => [...prevTimes, currentTime]);
+
+  //     // API call when status changes
+  //     axios.post('http://192.168.18.208:3000/api/checkins/checkin', {
+  //       // status: status,
+  //       // timestamp: currentTime,
+  //       latitude: Latitude,
+  //       longitude: Longitude,
+  //       status: status
+  //     })
+  //     .then(response => {
+  //       console.log('Status change recorded:', response.data);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error recording status change:', error);
+  //     });
+  //   }
   
-  }, [status]); // Depend on status
+  // }, [status]); // Depend on status
+  
+  useEffect(() => {
+    if (status) {
+      setStatusLog((prevStatusLog) => [...prevStatusLog, status]);
+      getCurrentTime();
+      setStatusChangeTimes((prevTimes) => [...prevTimes, currentTime]);
+  
+      // Ensure token is set
+      console.log("2. UseEffect checking token before calling api");
+      if (storedToken) {
+      console.log("2. UseEffect check is done token is there calling api");
+      console.log("2. and the stored token is this ", storedToken);
+      axios.post('http://192.168.18.208:3000/api/checkins/checkin', {
+        latitude: Latitude,
+        longitude: Longitude,
+        status: status
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        console.log('Status change recorded:', response.data);
+      })
+      .catch(error => {
+        console.error('Error recording status change:', error.response ? error.response.data : error.message);
+      });
+      } else {
+        console.error('No token available');
+      }
+    }
+  }, [status, token]); // Depend on status and token
   
   const getCurrentTime = () => {
     const now = new Date();
