@@ -39,8 +39,8 @@ const authenticateToken = async (req, res, next) => {
         //verify the token
         try{
             const decode =  jwt.verify(token, process.env.JWT_SECRET);
-            console.log(decode);
             req.user = decode;
+            console.log("decoding the token: " , req.user.id);
             // console.log(req.user.id);
         }
         catch(err) {
@@ -163,6 +163,7 @@ router.post('/checkin', authenticateToken, async (req, res) => {
         let checkin = await Checkin.findOne({ userId: req.user.id });
 
         if (!checkin) {
+            console.log("This user is checkin");
             // If no checkin exists for the user, create a new one
             const newCheckin = new Checkin({
                 userId: req.user.id,

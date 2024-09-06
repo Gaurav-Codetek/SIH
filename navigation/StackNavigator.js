@@ -19,6 +19,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LoginScreen from "../screen/Login";
 import SignUpScreen from "../screen/SignUp";
+import Signup from "../src/Signup";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -114,7 +115,8 @@ const StackNavigator = () => {
         />
         <Stack.Screen
           name="Register"
-          component={SignUpScreen}
+          // component={SignUpScreen}
+          component={Signup}
           options={{ headerShown: false }}
         />
         <Stack.Screen
