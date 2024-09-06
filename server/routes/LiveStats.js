@@ -9,5 +9,4 @@ const router = express.Router();
 router.get('/recentData', recentData);
 router.post('/recentData', authenticateToken,CheckedIn);
 router.put('/recentData', authenticateToken,CheckedOUT);
-
 module.exports = router;

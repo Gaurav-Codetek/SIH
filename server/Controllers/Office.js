@@ -212,11 +212,14 @@ exports.getCheckedInEmployeesCount = async (req, res) => {
 
 exports.getOfficeDetails = async (req, res) => {
   try {
-      // Get the employee ID from the request (assuming it's set in req.user by middleware)
-      const employeeId = req.user.id;
+    // Get the employee ID from the request (assuming it's set in req.user by middleware)
+    const employeeId = req.user.id;
+    console.log(employeeId)
 
       // Fetch the employee document to get the OfficeId
       const employee = await User.findById(employeeId);
+    console.log(employee)
+
 
       if (!employee) {
           return res.status(404).json({ success: false, message: 'Employee not found' });
@@ -224,9 +227,12 @@ exports.getOfficeDetails = async (req, res) => {
 
       // Get the OfficeId from the employee document
       const officeId = employee.OfficeId;
+      console.log(officeId)
 
       // Fetch the office details using the OfficeId
       const office = await Office.findById(officeId);
+      console.log(office)
+
 
       if (!office) {
           return res.status(404).json({ success: false, message: 'Office not found' });
@@ -246,6 +252,6 @@ exports.getOfficeDetails = async (req, res) => {
       });
   } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: 'Server error' });
+      res.status(500).json({ success: false, message: 'Server error hai' });
   }
 };

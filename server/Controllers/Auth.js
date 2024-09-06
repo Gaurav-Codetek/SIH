@@ -244,6 +244,7 @@ exports.authenticateToken = async (req, res, next) => {
               message:'token is invalid',
           });
       }
+      console.log("Inside authorization of token , the id is this ",req.user.id);
       next();
   }
   catch(error) {  
