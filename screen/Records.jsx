@@ -7,6 +7,9 @@ import {request, PERMISSIONS} from 'react-native-permissions';
 import getDistance from 'geolib/es/getDistance';
 import moment from 'moment';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Discover from './Discover';
+
 const Records = ({ route }) => {
   const { token: storedToken } = route.params; // Access the token from route params
   // const [token, setToken] = useState(storedToken);
@@ -84,8 +87,8 @@ const Records = ({ route }) => {
           );
         case 'ABHA':
           return (
-            <View style={styles.detailsContainer}>
-              <Text style={styles.detailsText}>Details for ABHA</Text>
+            <View style={[styles.detailsContainer]}>
+              <Discover/>
             </View>
           );
         case 'Vaccination':
@@ -107,7 +110,7 @@ const Records = ({ route }) => {
         // Define office coordinates and check-in distance
 const OFFICE_LATITUDE = 30.747461; // Replace with  office latitude
 const OFFICE_LONGITUDE = 76.7740133; // Replace with  office longitude
-const CHECKIN_DISTANCE_METERS = 2; // 200 meters radius
+const CHECKIN_DISTANCE_METERS = 5; // 200 meters radius
 
 
 const [seconds, setSeconds] = useState(0);
@@ -292,10 +295,11 @@ const [Longitude, setLongitude] = useState();
       axios.post('http://192.168.18.208:3000/api/checkins/checkin', {
         latitude: Latitude,
         longitude: Longitude,
-        status: status
+        status: status,
+        // totalWorkingHours:totalTime
       }, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${storedToken}`
         }
       })
       .then(response => {
@@ -486,11 +490,22 @@ const [Longitude, setLongitude] = useState();
         <Text style={styles.boxText}>Your Status</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.box}
+        style={{
+          alignItems: 'center',
+          padding: 10,
+          backgroundColor: selectedBox=='ABHA' ? 'skyblue':`white`,
+          borderRadius: 8,
+          width: '22%',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.3,
+          shadowRadius: 2,
+          elevation: 3,
+        }}
         onPress={() => setSelectedBox('ABHA')}
       >
         <Icon name="card-outline" size={30} color="#1E88E5" />
-        <Text style={styles.boxText}>Total Hours</Text>
+        <Text style={[styles.boxText]}>Total Hours</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.box}
@@ -565,6 +580,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 2,
         elevation: 3,
+        // backgroundColor:`red`
       },
       boxText: {
         marginTop: 5,
@@ -580,6 +596,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 2,
         elevation: 3,
+        // backgroundColor:`red`
       },
       detailsText: {
         fontSize: 16,
