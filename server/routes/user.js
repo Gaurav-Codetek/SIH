@@ -3,9 +3,12 @@ const router = express.Router();
 
 const { login,signup } = require("../Controllers/Auth");
 const {auth, isStudent, isAdmin}  = require("../middlewares/auth");
-
+const { authenticateToken }= require('../middlewares/auth')
+const {updateCheckedInStatus} = require('../Controllers/User')
 router.post("/login",login);
 router.post("/signup",signup);
+
+
 
 
 //Protected Route
@@ -30,6 +33,10 @@ router.get("/test",auth, (req,res)=>{
         message:'Welcome to the protected Route for Test',
     })
 })
+
+//to handle the checkin and checkout status of user and update it
+router.put('/updateStatus', authenticateToken,updateCheckedInStatus);
+
 
 
 module.exports = router;

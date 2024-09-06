@@ -21,13 +21,31 @@ mongoose.connect("mongodb+srv://johnkhore26:RoOrWmTmyzRB1LlN@cluster0.n4dgy.mong
 //route import and mount
 const user = require("./routes/user");
 const checkinRoutes = require('./routes/checkin')
+const recentdataRoutes = require('./routes/LiveStats')
+const department = require('./routes/Department')
+const office = require('./routes/Office');
+// const Location = require('./routes/Office')
 
-app.use("/api/v1", user);
+
+//livestat
+app.use("/api/v1/admin",recentdataRoutes);
+
+
+// 
+app.use(`/api/v1`, user);
 app.use('/api/checkins', checkinRoutes);
+app.use('/api/department', department);
+app.use('/api/office', office);
+// app.use('/api/Location', Location);
+
 
 
 app.listen(3000, ()=>{
     console.log("Server is running on port : 3000");
 })
+
+
+
+
 
 

@@ -70,3 +70,54 @@ exports.isAdmin = (req, res, next) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+exports.authenticateToken = async (req, res, next) => {
+  try{
+      //extract token
+      // const token = req.cookies.token 
+      //                 || req.body.token 
+      //                 || req.header("Authorisation").replace("Bearer ", "");
+      
+      const token = req.header("Authorization").replace("Bearer ", "");
+
+      //if token missing, then return response
+      if(!token) {
+          return res.status(401).json({
+              success:false,
+              message:'TOken is missing',
+          });
+      }
+
+      //verify the token
+      try{
+          const decode =  jwt.verify(token, process.env.JWT_SECRET);
+          req.user = decode;
+          console.log("decoding the token: " , req.user.id);
+          // console.log(req.user.id);
+      }
+      catch(err) {
+          //verification - issue
+          return res.status(401).json({
+              success:false,
+              message:'token is invalid',
+          });
+      }
+      next();
+  }
+  catch(error) {  
+      return res.status(401).json({
+          success:false,
+          message:'Something went wrong while validating the token',
+      });
+  }
+}

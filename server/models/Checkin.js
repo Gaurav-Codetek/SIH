@@ -55,7 +55,13 @@ const checkinSchema = new mongoose.Schema({
         ref: 'User',  // Ensure this matches the model name exactly
         required: true
     },
-    checkins: [checkinRecordSchema]  // Array of check-in records
+    checkins: [checkinRecordSchema],  // Array of check-in records
+
+    totalWorkingHours: {
+        type: String,
+        default: "00:00:00",  // Initially set to "00:00:00"
+        required: true
+    }
 });
 
 module.exports = mongoose.model("Checkin", checkinSchema);
