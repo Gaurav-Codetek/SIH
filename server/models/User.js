@@ -133,7 +133,21 @@ const mongoose = require("mongoose");
 
 // module.exports = mongoose.model("User", userSchema);
 
-
+const InOutHistorySchema  = new mongoose.Schema({
+  checkin: { type: String, required: true },
+  checkout: { type: String, required: true }
+});
+const DailyHistorySchema  = new mongoose.Schema({
+  id: { type: Number, required: true },
+  workingHour: { type: String, required: true },
+  workingMin: { type: String, required: true },
+  date: { type: String, required: true },
+  inOutHistory: [InOutHistorySchema]
+});
+const MonthlyHistorySchema = new mongoose.Schema({
+  month: { type: String, required: true }, // e.g., 'January'
+  days: [DailyHistorySchema]
+});
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -180,6 +194,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter Department"],
   },
+  
+  history: [MonthlyHistorySchema],
+  
   age: {
     type: Number,
     required: [true, "Please enter your age"],
@@ -205,4 +222,58 @@ const UserSchema = new mongoose.Schema({
 });
 
 
+
+
+
+
 module.exports = mongoose.model("User", UserSchema);
+
+
+// {
+//   "id": 1,
+//   "name": "Gaurav Patel",
+//   "designation": "Team Lead",
+//   "history": [
+//     {
+//       "month": "January",
+//       "days": [
+//         {
+//           "id": 1,
+//           "workingHour": "07",
+//           "workingMin": "24",
+//           "date": "1",
+//           "inOutHistory": [
+//             { "checkin": "07:00", "checkout": "16:29" },
+//             { "checkin": "07:12", "checkout": "16:29" },
+//             { "checkin": "07:12", "checkout": "16:29" }
+//           ]
+//         },
+//         {
+//           "id": 2,
+//           "workingHour": "09",
+//           "workingMin": "24",
+//           "date": "2",
+//           "inOutHistory": [
+//             { "checkin": "07:12", "checkout": "16:29" },
+//             { "checkin": "07:00", "checkout": "16:29" },
+//             { "checkin": "07:12", "checkout": "16:29" }
+//           ]
+//         }
+//       ]
+//     },
+//     {
+//       "month": "February",
+//       "days": [
+//         {
+//           "id": 1,
+//           "workingHour": "09",
+//           "workingMin": "24",
+//           "date": "5",
+//           "inOutHistory": [
+//             { "checkin": "07:12", "checkout": "16:29" }
+//           ]
+//         }
+//       ]
+//     }
+//   ]
+// }

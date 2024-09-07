@@ -1,4 +1,5 @@
-const User = require('../models/User'); 
+const User = require('../models/User');
+const moment = require('moment');
 
 // Controller to update the checkedIN status of a user
 exports.updateCheckedInStatus = async (req, res) => {
@@ -42,3 +43,49 @@ exports.getGenderCounts = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+
+
+
+//   User History update at the end of day
+exports.UserFetch = async (req, res) => {
+    try {
+      const userId = req.user.id; // Extract user ID from authenticated user
+      const { checkin, checkout } = req.body;
+  
+      const currentMonth = moment().format('MMMM'); // Get current month name
+      const currentDate = moment().date(); // Get current day of the month
+  
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Find or create the month record
+      let monthHistory = user.history.find(h => h.month === currentMonth);
+      if (!monthHistory) {
+        monthHistory = { month: currentMonth, days: [] };
+        user.history.push(monthHistory);
+      }
+  
+      // Find or create the day record
+      let dayHistory = monthHistory.days.find(d => d.date == currentDate);
+      if (!dayHistory) {
+        const newDayId = monthHistory.days.length + 1;
+        dayHistory = { id: newDayId, workingHour: "00", workingMin: "00", date: currentDate.toString(), inOutHistory: [] };
+        monthHistory.days.push(dayHistory);
+      }
+  
+      // Update inOutHistory
+      const check = { checkin: checkin, checkout: checkout }
+      dayHistory.inOutHistory.push(check);
+  
+      // Save the user document
+      await user.save();
+  
+      res.json({ message: 'Check-in and Check-out updated successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error' });
+    }
+};
