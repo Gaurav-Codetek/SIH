@@ -27,7 +27,11 @@ const OfficeSchema = new mongoose.Schema({
   employees: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-  }]
+  }],
+  CheckedINemployees: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }],
 
   //now move to controlle
 }, {

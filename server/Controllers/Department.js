@@ -93,3 +93,95 @@ exports.getCheckedInEmployeesCountByDepartment = async (req, res) => {
         res.status(500).json({ error: 'Server error.' });
     }
 };
+
+
+// exports.DeparmentStatus = async (req, res) => {
+//   try {
+//     const { deptId } = req.params;
+
+//     // Find the department and populate the employees field
+//     const department = await Department.findById(deptId).populate({
+//       path: 'employees',
+//       select: 'EmployeeId name checkedIN', // Only select the fields you need
+//     });
+
+//     if (!department) {
+//       return res.status(404).json({ message: 'Department not found' });
+//     }
+
+//     // Respond with the employee data
+//     res.json({
+//       departmentName: department.name,
+//       employees: department.employees.map(employee => ({
+//         id: employee._id,
+//         employeeId: employee.EmployeeId,
+//         name: employee.name,
+//         checkedIN: employee.checkedIN,
+//       })),
+//     });
+//   } catch (error) {
+//     console.error('Error fetching employee details:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+// exports.DeparmentStatus = async (req, res) => {
+//   try {
+//     const { deptId } = req.params;
+
+//     // Find the department and populate the employees field
+//     const department = await Department.findById(deptId).populate({
+//       path: 'employees',
+//       select: 'EmployeeId name checkedIN', // Select only the necessary fields
+//     });
+
+//     if (!department) {
+//       return res.status(404).json({ message: 'Department not found' });
+//     }
+
+//     // Respond with the employee data
+//     res.json({
+//       departmentName: department.name,
+//       employees: department.employees.map(employee => ({
+//         id: employee._id,
+//         employeeId: employee.EmployeeId,
+//         name: employee.name,
+//         checkedIN: employee.checkedIN,
+//       })),
+//     });
+//   } catch (error) {
+//     console.error('Error fetching employee details:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
+exports.DeparmentStatus = async (req, res) => {
+  try {
+    const { deptId } = req.params;
+
+    // Find the department and populate the employees field
+    const department = await Department.findById(deptId).populate({
+      path: 'employees',
+      select: 'EmployeeId name checkedIN', // Select only the necessary fields
+    });
+
+    if (!department) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
+
+    // Respond with the formatted employee data
+    res.json({
+      Dept: department.employees.map(employee => ({
+        deptid: deptId, // Use the department ID
+        Department: department.name, // Use the department name
+        EmpId: employee.EmployeeId,
+        EmpName: employee.name,
+        checkedIN: employee.checkedIN,
+      })),
+    });
+  } catch (error) {
+    console.error('Error fetching employee details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

@@ -5,8 +5,10 @@ const { login,signup } = require("../Controllers/Auth");
 const {auth, isStudent, isAdmin}  = require("../middlewares/auth");
 const { authenticateToken }= require('../middlewares/auth')
 const {updateCheckedInStatus} = require('../Controllers/User')
+const {getGenderCounts} = require('../Controllers/User')
 router.post("/login",login);
 router.post("/signup",signup);
+router.get("/getGenderCounts",getGenderCounts);
 
 
 

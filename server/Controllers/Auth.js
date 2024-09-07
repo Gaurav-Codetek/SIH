@@ -149,6 +149,10 @@ exports.signup = async (req, res) => {
         message: "Office not found",
       });
     }
+    // let officeLatitude;
+    // let officeLongitude;
+    // officeLatitude = officeId.latitude;
+    // officeLongitude = officeId.longitude;
 
     // Find the department by its name and the office ID
     console.log("DepartmentName:",department);
@@ -175,10 +179,14 @@ exports.signup = async (req, res) => {
       OfficeId: officeId._id,  // Save the office ID
       departmentId: departmentId._id,  // Save the department ID
       age,
+      OfficeLongitude:officeId.longitude,
+      OfficeLatitude:officeId.latitude
     });
+
     console.log("Tryig to save the user");
     const savedUser = await newUser.save();
     console.log("User saved sucessfully");
+    console.log(savedUser);
 
     
      console.log("Trying to save the userId into array of employee in dep");
@@ -204,7 +212,6 @@ exports.signup = async (req, res) => {
     });
   }
 };
-
 
 
 
@@ -254,3 +261,6 @@ exports.authenticateToken = async (req, res, next) => {
       });
   }
 }
+
+
+

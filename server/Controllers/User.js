@@ -25,3 +25,20 @@ exports.updateCheckedInStatus = async (req, res) => {
         res.status(500).json({ error: 'Server error.' });
     }
 };
+
+
+exports.getGenderCounts = async (req, res) => {
+    try {
+      // Count the number of male employees
+      const maleCount = await User.countDocuments({ gender: 'Male' });
+  
+      // Count the number of female employees
+      const femaleCount = await User.countDocuments({ gender: 'Female' });
+  
+      // Return the counts in the desired format
+      res.status(200).json({ data: [femaleCount,maleCount] });
+    } catch (error) {
+      console.error('Error retrieving gender counts:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
