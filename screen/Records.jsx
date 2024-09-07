@@ -117,6 +117,27 @@ useEffect(() => {
     }
   };
 
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in kilometers
+    const toRad = (value) => (value * Math.PI) / 180;
+  
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+  
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+  
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  
+    const distance = R * c; // Distance in kilometers
+  
+    return distance;
+  }
+
   const checkInOut = (userLocation) => {
     console.log("Now first calculating the type ");
     // console.log(typeof(userOfficeLatitude));
@@ -125,10 +146,11 @@ useEffect(() => {
     // console.log(typeof(userLocation.longitude));
     console.log("User Location:", userLocation);
     console.log("Office Coordinates:", {latitude: officeLat, longitude: officeLon});
-    const distance = getDistance(
-      {latitude: userLocation.latitude, longitude: userLocation.longitude},
-      {latitude: officeLat, longitude: officeLon},
-    );
+    // const distance = getDistance(
+    //   {latitude: userLocation.latitude, longitude: userLocation.longitude},
+    //   {latitude: officeLat, longitude: officeLon},
+    // );
+    const distance = haversine(userLocation.latitude,userLocation.longitude,officeLat,officeLon);
     console.log('user location latitude: ', userLocation.latitude);
     console.log('user location longitude: ', userLocation.longitude);
     // setLatitude(userLocation.latitude);
