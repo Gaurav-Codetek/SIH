@@ -1,15 +1,14 @@
 const express = require('express');
 const app = express();
-
+const cors = require('cors')
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(cors());
 
 const mongoose = require('mongoose');
 
 // // Connect to MongoDB
 mongoose.connect("mongodb+srv://johnkhore26:RoOrWmTmyzRB1LlN@cluster0.n4dgy.mongodb.net/", {
-    useNewUrlParser: true, 
-    useUnifiedTopology: true
 })
 .then(() => {
     console.log("Connection Successful");

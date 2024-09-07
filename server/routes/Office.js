@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // const { createLocation,getAllLocations } = require('../Controllers/Office'); // Adjust the path as needed
-const {createOffice,getAllOffices,getOfficeById,getCheckedInEmployeesCount,getOfficeDetails} =require('../Controllers/Office');
+const {createOffice,getAllOffices,getOfficeById,getCheckedInEmployeesCount,getLocationAndDistance,checkInUser,checkOutUser,giveAllOfficesDashboard,getAllOfficesDetails} =require('../Controllers/Office');
 const { authenticateToken } = require('../Controllers/Auth');
 
 // Route to create a new Office
@@ -14,7 +14,11 @@ router.get('/getAllOffices', getAllOffices);
 router.get('/:id', getOfficeById);
 
 router.get('/getCheckedInEmployeesCount/:officeName',getCheckedInEmployeesCount);
-router.get('/getOfficeDetails',authenticateToken,getOfficeDetails);
+router.post('/checkInUserOffice',authenticateToken, checkInUser);
+router.post('/checkOutUserOffice',authenticateToken, checkOutUser);
+router.get('/giveAllOfficesDashBoard', giveAllOfficesDashboard);
+// router.get('/getAllOfficesDetails', getAllOfficesDetails);
+// router.get('/getLocationAndDistance', authenticateToken , getLocationAndDistance);
 
 module.exports = router;
 

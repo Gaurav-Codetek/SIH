@@ -11,12 +11,15 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     const getData = async () => {
       const storedToken = await AsyncStorage.getItem("Token");
+      const latitude = await AsyncStorage.getItem('officeLatitude');
+      const longitude = await AsyncStorage.getItem('officeLongitude');
+      const Minimumdistance = await AsyncStorage.getItem('Minimumdistance');
       if (storedToken) {
         setToken(storedToken);
         console.log("Token exists:", storedToken);
         // Optionally navigate to another screen or handle the token
-        navigation.navigate('Records', { token: storedToken }); // Example of navigation if token exists
         
+        navigation.navigate('Records', { token: storedToken,latitude:latitude,longitude:longitude,CHECKIN_DISTANCE_METERS:Minimumdistance}); // Example of navigation if token exists
       }
     };
 
@@ -26,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.11.132:3000/api/v1/login', {
+      const response = await axios.post('http://192.168.188.132:3000/api/v1/login', {
         email,
         password,
       });
@@ -35,11 +38,17 @@ const LoginScreen = ({ navigation }) => {
         console.log("This is token (inside login page) ",response.data.token);
         //this is the token
         const storedToken= await AsyncStorage.setItem("Token",response.data.token);
+        const latitude = await AsyncStorage.getItem('officeLatitude');
+        const longitude = await AsyncStorage.getItem('officeLongitude');
+        const Minimumdistance = await AsyncStorage.getItem('Minimumdistance');
+
         Alert.alert('Login Successful', response.data.message);
         // Navigate to another screen or save token
 
         setToken(storedToken);
-        navigation.navigate('Records', { token: response.data.token }); // Example of navigation if token exists
+        // navigation.navigate('Records', { token: response.data.token }); // Example of navigation if token exists
+        navigation.navigate('Records', { token: response.data.token,latitude:latitude,longitude:longitude,CHECKIN_DISTANCE_METERS:Minimumdistance}); // Example of navigation if token exists
+
       } else {
         Alert.alert('Login Failed', response.data.message);
       }

@@ -10,124 +10,45 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Discover from './Discover';
 
-//yes , so we have to work on three things , offices apis, dep
 
 const Records = ({ route }) => {
-  const { token: storedToken } = route.params; // Access the token from route params
-  // const [token, setToken] = useState(storedToken);
+  const { token: storedToken, latitude,longitude,CHECKIN_DISTANCE_METERS } = route.params; // Access the token from route params
   const [token, setToken] = useState(storedToken);
+  const [officeLat, setOfficeLat] = useState(latitude || 0);
+  const [officeLon, setOfficeLon] = useState(longitude || 0);
 
-  // useEffect(() => {
-  //   // Define an async function to remove the item
-  //   const removeItem = async () => {
-  //     try {
-  //       await AsyncStorage.removeItem('Token');
-  //       console.log('Item removed successfully');
-  //     } catch (error) {
-  //       console.error('Error removing item', error);
-  //     }
-  //   };
-
-  //   // Call the async function
-  //   removeItem();
-  // }, []);
-  
-
-  useEffect(() => {
-    console.log("In first useEffect");
-    const getData = async () => {
-    console.log("stored token from async storage");
+  const [selectedBox, setSelectedBox] = useState('Your Status');
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [permissionGranted, setPermissionGranted] = useState(false);
+  const [permissionGrantedBG, setPermissionGrantedBG] = useState(false);
+  const [status, setStatus] = useState('Not checked in');
+  const [distance1, setDistance] = useState(0);
+  const [Latitude, setLatitude] = useState();
+  const [Longitude, setLongitude] = useState();
+  const [userOfficeLatitude, setUserOfficeLatitude] = useState(0);
+  const [userOfficeLongitude, setUserOfficeLongitude] = useState(0);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      // Fetch Token
       const storedToken = await AsyncStorage.getItem("Token");
-    console.log("stored token from async storage is this: ", storedToken);
       if (storedToken) {
         setToken(storedToken);
         console.log("Token exists:", storedToken);
-        // Optionally navigate to another screen or handle the token
       }
-    };    
-    getData();
-  }, []);
 
-    const [selectedBox, setSelectedBox] = useState('Your Status');
-    // console.log(toke)
+    } catch (error) {
+      console.error("Error retrieving data from AsyncStorage:", error);
+    }
+  };
 
-    const renderDetails = () => {
-      switch (selectedBox) {
-        case 'Your Status':
-          return (
-            <View style={styles.detailsContainer}>
-              <Text style={styles.detailsText}>Details for Your Status</Text>
-              <Text
-        style={{
-          color: 'blue',
-          fontWeight: 'bold',
-          padding: 10,
-          borderRadius: 5,
-          fontSize: 20,
-        }}>
-        Total Working Hours:{' '}
-        <Text style={{}}>
-          {Math.floor(seconds / 3600)
-            .toString()
-            .padStart(2, '0')}
-          :{Math.floor((seconds % 3600) / 60)
-            .toString()
-            .padStart(2, '0')}
-          :{(seconds % 60).toString().padStart(2, '0')}
-        </Text>
-      </Text>
-      <Text
-        style={{
-          backgroundColor: status === 'Checked in' ? 'green' : 'red',
-          color: 'white',
-          padding: 10,
-          borderRadius: 5,
-        }}>
-        Status: {status}
-      </Text>
-            </View>
-          );
-        case 'ABHA':
-          return (
-            <View style={[styles.detailsContainer]}>
-              <Discover/>
-            </View>
-          );
-        case 'Vaccination':
-          return (
-            <View style={styles.detailsContainer}>
-              <Text style={styles.detailsText}>Check Your Rank in Office</Text>
-            </View>
-          );
-        case 'COVID Updates':
-          return (
-            <View style={styles.detailsContainer}>
-              <Text style={styles.detailsText}>Details for SmartCheckIn Updates</Text>
-            </View>
-          );
-        default:
-          return null;
-      }
-    };
-        // Define office coordinates and check-in distance
-const OFFICE_LATITUDE = 30.7635159; // Replace with  office latitude
-const OFFICE_LONGITUDE = 76.7673121; // Replace with  office longitude
-const CHECKIN_DISTANCE_METERS = 10; // 200 meters radius
-
-
-const [seconds, setSeconds] = useState(0);
-const [isActive, setIsActive] = useState(false);
-const [intervalId, setIntervalId] = useState(null);
-const [location, setLocation] = useState(null);
-const [permissionGranted, setPermissionGranted] = useState(false);
-const [permissionGrantedBG, setPermissionGrantedBG] = useState(false);
-const [status, setStatus] = useState('Not checked in');
-const [distance1, setDistance] = useState(0);
-const [Latitude, setLatitude] = useState();
-const [Longitude, setLongitude] = useState();
-
-
-  //current time 
+  fetchData();
+}, []);
+// const CHECKIN_DISTANCE_METERS = 200; 
+//current time 
   const [currentTime, setCurrentTime] = useState('');
 
   // Array to store check-in/check-out statuses
@@ -172,6 +93,8 @@ const [Longitude, setLongitude] = useState();
         console.log("Permission is granted");
         Geolocation.getCurrentPosition(
         (position) => {
+          // watch position async  ( possible ) 
+          //push notification
           const userLocation = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -195,16 +118,23 @@ const [Longitude, setLongitude] = useState();
   };
 
   const checkInOut = (userLocation) => {
+    console.log("Now first calculating the type ");
+    // console.log(typeof(userOfficeLatitude));
+    // console.log(typeof(userOfficeLongitude));
+    // console.log(typeof(userLocation.latitude));
+    // console.log(typeof(userLocation.longitude));
+    console.log("User Location:", userLocation);
+    console.log("Office Coordinates:", {latitude: officeLat, longitude: officeLon});
     const distance = getDistance(
       {latitude: userLocation.latitude, longitude: userLocation.longitude},
-      {latitude: OFFICE_LATITUDE, longitude: OFFICE_LONGITUDE},
+      {latitude: officeLat, longitude: officeLon},
     );
     console.log('user location latitude: ', userLocation.latitude);
     console.log('user location longitude: ', userLocation.longitude);
-    setLatitude(userLocation.latitude);
-    setLongitude(userLocation.longitude);
-    console.log('user Office latitude: ', OFFICE_LATITUDE);
-    console.log('user Office longitude: ', OFFICE_LONGITUDE);
+    // setLatitude(userLocation.latitude);
+    // setLongitude(userLocation.longitude);
+    // console.log('user Office latitude: ', OFFICE_LATITUDE);
+    // console.log('user Office longitude: ', OFFICE_LONGITUDE);
     console.log(distance);
     setDistance(distance);
 
@@ -214,8 +144,6 @@ const [Longitude, setLongitude] = useState();
       setStatus('Checked out');
     }
   };
-
-
 
   useEffect(() => {
     let locationInterval = null;
@@ -259,30 +187,6 @@ const [Longitude, setLongitude] = useState();
     setIsActive(false);
     setSeconds(0);
   };
-
-  // useEffect(() => {
-  //   if (status) {
-  //     setStatusLog((prevStatusLog) => [...prevStatusLog, status]);
-  //     getCurrentTime();
-  //     setStatusChangeTimes((prevTimes) => [...prevTimes, currentTime]);
-
-  //     // API call when status changes
-  //     axios.post('http://192.168.18.208:3000/api/checkins/checkin', {
-  //       // status: status,
-  //       // timestamp: currentTime,
-  //       latitude: Latitude,
-  //       longitude: Longitude,
-  //       status: status
-  //     })
-  //     .then(response => {
-  //       console.log('Status change recorded:', response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error recording status change:', error);
-  //     });
-  //   }
-  
-  // }, [status]); // Depend on status
   
   useEffect(() => {
     if (status) {
@@ -290,12 +194,11 @@ const [Longitude, setLongitude] = useState();
       getCurrentTime();
       setStatusChangeTimes((prevTimes) => [...prevTimes, currentTime]);
   
-      // Ensure token is set
-      console.log("2. UseEffect checking token before calling api");
+      console.log("Stored Token:", storedToken);
       if (storedToken) {
-      console.log("2. UseEffect check is done token is there calling api");
-      console.log("2. and the stored token is this ", storedToken);
-      axios.post('http://192.168.11.132:3000/api/checkins/checkin', {
+      //First API
+      //This API call to update status chechin model  -> used to calculate the total working hours and history of user
+      axios.post('http://192.168.188.132:3000/api/checkins/checkin', {
         latitude: Latitude,
         longitude: Longitude,
         status: status,
@@ -306,30 +209,35 @@ const [Longitude, setLongitude] = useState();
         }
       })
       .then(response => {
-        console.log('Status change recorded:', response.data);
+        console.log(response.data.message);
       })
       .catch(error => {
         console.error('Error recording status change:', error.response ? error.response.data : error.message);
       });
-              // this api call is for user to chance the satus true or false depending upon the checkin or checked out
-        // now it is checked in show i have to make it true, find by id and update and make it true 
-        console.log("Checking status");
-        console.log(status);
-        axios.put('http://192.168.11.132:3000/api/v1/updateStatus', {
-          status: status=='Checked in' ? true : false
-        }, {
+      //Second API 
+      // This API call is to manipulate the User model -> CheckIN -> true or false 
+      console.log("Checking status");
+      console.log(status);
+      axios.put('http://192.168.188.132:3000/api/v1/updateStatus', {
+        status: status=='Checked in' ? true : false
+      }, {
           headers: {
             Authorization: `Bearer ${storedToken}`
           }
         })
         .then(response => {
-          console.log('Status change recorded:', response.data);
+          console.log('Status change recorded(in 2nd API):', response.data);
+          console.log("2nd API ends here");
         })
         .catch(error => {
-          console.error('Error recording status change:', error.response ? error.response.data : error.message);
+          console.error('Error recording status change(in 2nd api):', error.response ? error.response.data : error.message);
         });
+
+
+        
       if(status == 'Checked in'){
-        axios.post('http://192.168.11.132:3000/api/v1/admin/recentData', {
+        // 3.1 api for live stats checkedIn
+        axios.post('http://192.168.188.132:3000/api/v1/admin/recentData', {
           // employee:
         }, {
           headers: {
@@ -342,9 +250,23 @@ const [Longitude, setLongitude] = useState();
         .catch(error => {
           console.error('Error recording status change:', error.response ? error.response.data : error.message);
         });
+        //3.2 API to update the checkedINEmployee array of that particular office
+        axios.post('http://192.168.188.132:3000/api/office/checkInUserOffice', {
+        }, {
+          headers: {
+            Authorization: `Bearer ${storedToken}`
+          }
+        })
+        .then(response => {
+          console.log('checkInUserOffice:', response.data);
+        })
+        .catch(error => {
+          console.error('Error While pushing the employee inside the array of CheckedIN employee change:', error.response ? error.response.data : error.message);
+        });
       }
       else{
-        axios.put('http://192.168.11.132:3000/api/v1/admin/recentData', {
+        //3.4 api for live stats checkedOut
+        axios.put('http://192.168.188.132:3000/api/v1/admin/recentData', {
           // employee:
         }, {
           headers: {
@@ -357,6 +279,21 @@ const [Longitude, setLongitude] = useState();
         .catch(error => {
           console.error('Error recording status change:', error.response ? error.response.data : error.message);
         }); 
+
+        //3.5 API to update the checkedINEmployee array of that particular office
+        axios.post('http://192.168.188.132:3000/api/office/checkOutUserOffice', {
+        }, {
+          headers: {
+            Authorization: `Bearer ${storedToken}`
+          }
+        })
+        .then(response => {
+          console.log('checkInUserOffice:', response.data);
+        })
+        .catch(error => {
+          console.error('Error While pushing the employee inside the array of CheckedIN employee change:', error.response ? error.response.data : error.message);
+        });
+ 
       }
       
       } else {
@@ -426,24 +363,7 @@ const [Longitude, setLongitude] = useState();
           }
           return () => clearInterval(intervalId);
         }, [status]);
-        
-          // const handleStart = () => {
-          //   if (status === 'Checked in') {
-          //     setIsActive(true);
-          //   }
-          // };
-        
-          // const handlePause = () => {
-          //   if (status !== 'Checked in') {
-          //     setIsActive(true);
-          //   }
-          // };
-        
-          // const handleReset = () => {
-          //   setIsActive(false);
-          //   setSeconds(0);
-          // };
-        
+      
           useEffect(() => {
             // Store the status in the statusLog array
             setStatusLog((prevStatusLog) => [...prevStatusLog, status]);
@@ -453,11 +373,7 @@ const [Longitude, setLongitude] = useState();
             setStatusChangeTimes((prevTimes) => [...prevTimes, currentTime]);
           
           }, [status]); // Depend on status
-          
-        //   const getCurrentTime = () => {
-        //     const now = new Date();
-        //     return setCurrentTime(now.toLocaleTimeString()); // Returns time in a readable format
-        //   };
+
 
         await sleep(10000); // Wait for the delay period
       }
@@ -520,6 +436,68 @@ const [Longitude, setLongitude] = useState();
     };
   }, []);
 
+
+
+  //UI
+  const renderDetails = () => {
+    switch (selectedBox) {
+      case 'Your Status':
+        return (
+          <View style={styles.detailsContainer}>
+            <Text style={styles.detailsText}>Details for Your Status</Text>
+            <Text
+      style={{
+        color: 'blue',
+        fontWeight: 'bold',
+        padding: 10,
+        borderRadius: 5,
+        fontSize: 20,
+      }}>
+      Total Working Hours:{' '}
+      <Text style={{}}>
+        {Math.floor(seconds / 3600)
+          .toString()
+          .padStart(2, '0')}
+        :{Math.floor((seconds % 3600) / 60)
+          .toString()
+          .padStart(2, '0')}
+        :{(seconds % 60).toString().padStart(2, '0')}
+      </Text>
+    </Text>
+    <Text
+      style={{
+        backgroundColor: status === 'Checked in' ? 'green' : 'red',
+        color: 'white',
+        padding: 10,
+        borderRadius: 5,
+      }}>
+      Status: {status}
+    </Text>
+          </View>
+        );
+      case 'ABHA':
+        return (
+          <View style={[styles.detailsContainer]}>
+            <Discover/>
+          </View>
+        );
+      case 'Vaccination':
+        return (
+          <View style={styles.detailsContainer}>
+            <Text style={styles.detailsText}>Check Your Rank in Office</Text>
+          </View>
+        );
+      case 'COVID Updates':
+        return (
+          <View style={styles.detailsContainer}>
+            <Text style={styles.detailsText}>Details for SmartCheckIn Updates</Text>
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <View style={styles.container}>
     {/* Header */}
@@ -529,6 +507,11 @@ const [Longitude, setLongitude] = useState();
         <Icon name="chatbubble-outline" size={20} color="#fff" />
         <Icon name="notifications-outline" size={20} color="#fff" style={{ marginLeft: 10 }} />
       </View>
+    </View>
+    <View>
+      <Text>Office Longitude: {officeLat}</Text>
+      <Text>Office Longitude: {officeLon}</Text>
+      <Text>minimum distance: {CHECKIN_DISTANCE_METERS}</Text>
     </View>
 
 <View style={{marginTop:15,padding:4}}>
